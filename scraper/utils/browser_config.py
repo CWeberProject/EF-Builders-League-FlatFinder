@@ -2,7 +2,19 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from pyvirtualdisplay import Display
 import random
+import atexit
+
+# Initialize virtual display
+display = None
+
+def initialize_virtual_display():
+    """Initialize virtual display using Xvfb."""
+    global display
+    display = Display(visible=0, size=(1920, 1080))
+    display.start()
+    atexit.register(lambda: display.stop() if display else None)
 
 # Standard viewport sizes for randomization
 VIEWPORT_SIZES = [
@@ -25,7 +37,9 @@ def get_random_user_agent() -> str:
     return random.choice(USER_AGENTS)
 
 def setup_webdriver() -> webdriver.Chrome:
-    """Configure and initialize Chrome WebDriver with anti-detection measures."""
+    """Configure and initialize Chrome WebDriver with anti-detection measures in virtual display."""
+    # Start virtual display before browser
+    initialize_virtual_display()
     options = Options()
     
     # Set random viewport size

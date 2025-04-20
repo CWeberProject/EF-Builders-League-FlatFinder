@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: scraper
+    env: python
+    buildCommand: |
+      apt-get update && \
+      apt-get install -y xvfb chromium chromium-driver fonts-dejavu-core && \
+      pip install -r requirements.txt
+    startCommand: python start_server_prod.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9
+    packages:
+      - xvfb
+      - chromium-browser
+      - libxss1  # Additional dependency for Chrome
+      - xvfb-run # xvfb wrapper utility
