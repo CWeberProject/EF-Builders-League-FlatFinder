@@ -216,6 +216,12 @@ class ContactParser:
             logger.info("Loading page URL in Selenium...")
             self.driver.get(url)
             
+            # Add debugging info to check for blocking
+            logger.info(f"Page title: {self.driver.title}")
+            logger.info("=== BEGIN PAGE SOURCE ===")
+            logger.info(self.driver.page_source)
+            logger.info("=== END PAGE SOURCE ===")
+            
             # Simulate reading the page
             read_time = random.uniform(8.0, 15.0)
             logger.info(f"Simulating page reading for {read_time:.1f} seconds...")

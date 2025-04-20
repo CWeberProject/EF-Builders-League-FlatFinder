@@ -5,7 +5,7 @@ from ..utils.logging_config import logger
 class RateLimiter:
     """Token bucket algorithm for rate limiting with jitter."""
     
-    def __init__(self, min_delay: float = 15.0, max_delay: float = 30.0):
+    def __init__(self, min_delay: float = 5.0, max_delay: float = 10.0):
         """Initialize rate limiter with configurable delays.
         
         Args:

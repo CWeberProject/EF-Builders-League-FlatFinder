@@ -1,20 +1,13 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+import undetected_chromedriver as uc
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from pyvirtualdisplay import Display
+import urllib.request
+import ssl
 import random
-import atexit
+import os
 
-# Initialize virtual display
-display = None
-
-def initialize_virtual_display():
-    """Initialize virtual display using Xvfb."""
-    global display
-    display = Display(visible=0, size=(1920, 1080))
-    display.start()
-    atexit.register(lambda: display.stop() if display else None)
+# Get Chrome paths from environment or use defaults
+CHROME_PATH = os.getenv('CHROME_PATH', '/usr/bin/google-chrome')
+CHROMEDRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/bin/chromedriver')
 
 # Standard viewport sizes for randomization
 VIEWPORT_SIZES = [
@@ -32,15 +25,26 @@ USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.7049.96 Edge/135.0.7049.96',
 ]
 
+# Proxy settings
+PROXY = "http://brd-customer-hl_edbe428d-zone-residential_proxy1:56g4ze3s28m3@brd.superproxy.io:33335"
+
+
 def get_random_user_agent() -> str:
     """Return a random User-Agent string."""
     return random.choice(USER_AGENTS)
 
-def setup_webdriver() -> webdriver.Chrome:
-    """Configure and initialize Chrome WebDriver with anti-detection measures in virtual display."""
-    # Start virtual display before browser
-    initialize_virtual_display()
-    options = Options()
+def setup_webdriver():
+    """Configure and initialize undetected Chrome WebDriver with anti-detection measures."""
+    # Initialize undetected Chrome options
+    options = uc.ChromeOptions()
+    
+    # Headless mode configuration
+    options.add_argument("--headless=new")
+    options.add_argument("--remote-debugging-port=9222")
+    
+    # Container-specific Chrome flags
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     
     # Set random viewport size
     viewport = random.choice(VIEWPORT_SIZES)
@@ -49,14 +53,13 @@ def setup_webdriver() -> webdriver.Chrome:
     # Set random user agent
     options.add_argument(f'user-agent={get_random_user_agent()}')
     
-    # Add common browser features and anti-detection measures
-    options.add_argument('--disable-blink-features=AutomationControlled')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    
     # Enable cookies and storage
     options.add_argument('--enable-cookies')
     options.add_argument('--enable-local-storage')
+    
+    # -------- proxy flag --------
+    options.add_argument(f"--proxy-server={PROXY}")
+
     
     # Add common Chrome preferences
     prefs = {
@@ -69,9 +72,8 @@ def setup_webdriver() -> webdriver.Chrome:
     }
     options.add_experimental_option('prefs', prefs)
     
-    # Initialize webdriver with custom options
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    # Initialize undetected Chrome driver
+    driver = uc.Chrome(options=options)
     
     # Set viewport size
     driver.set_window_size(viewport[0], viewport[1])

@@ -1,0 +1,38 @@
+# Version control
+.git
+.gitignore
+
+# Environment files
+.env
+.env.*
+venv
+.venv
+ENV/
+
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Development
+*.log
+logs/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+.ngrok/
+ngrok.yml
+*.ngrok.yml
+output/
+temp/
+.DS_Store
